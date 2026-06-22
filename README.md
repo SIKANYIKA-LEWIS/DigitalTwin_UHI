@@ -1,5 +1,5 @@
-# DigitalTwin_UHI
-DigitalTwin_UHI is my Final Year Computer Science Project, focused on the development of a digital twin platform for simulating and analyzing Urban Heat Island (UHI) effects. The system integrates geospatial data, temperature mapping, and intervention modeling to evaluate cooling strategies such as tree planting, green spaces, and green roofs, supporting data-driven decision-making in urban planning and sustainable city development.
+#  Digital Twin for Urban Heat Island (UHI) Mitigation
+Digital Twin for Urban Heat Island (UHI) Mitigation is my Final Year Computer Science Project, focused on the development of a digital twin platform for simulating and analyzing Urban Heat Island (UHI) effects. The system integrates geospatial data, temperature mapping, and intervention modeling to evaluate cooling strategies such as tree planting, green spaces, and green roofs, supporting data-driven decision-making in urban planning and sustainable city development.
 
 1. LANGUAGES
    Backend:  Python 3.10+ (all logic)
