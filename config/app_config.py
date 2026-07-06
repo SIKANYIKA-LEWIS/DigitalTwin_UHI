@@ -2,6 +2,8 @@ class AppConfig:
 
     FOOTPRINTS_PATH = "resources/footprints/kitwe_buildings.geojson"
     TEMPERATURE_PATH = "resources/tempreature/Kitwe_CBD_LST_October_2024.tif"
+    TEMPERATURE_PATH_2023 = "resources/tempreature/Kitwe_CBD_LST_October_2023.tif"
+    TEMPERATURE_PATH_2022 = "resources/tempreature/Kitwe_CBD_LST_October_2022.tif"
     ROADS_PATH = "resources/footprints/kitwe_roads.geojson"
 
     # --- INTERVENTION INFO ---   

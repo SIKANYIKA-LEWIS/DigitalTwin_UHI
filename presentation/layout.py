@@ -104,6 +104,14 @@ def build_layout(sim):
                         ],
                     ),
 
+                    # -- Consistency Check button --
+                    html.Div(
+                        className="button-row",
+                        children=[
+                            html.Button("\u2194  Data Consistency", id="btn-consistency", n_clicks=0, className="btn-undo"),
+                        ],
+                    ),
+
                 ],
             ),
             #------- LEFT SIDE SIDEBAR ENDS HERE ------------#
@@ -252,6 +260,24 @@ def build_layout(sim):
                         children=[
                             html.Button("\u2715", id="btn-close-validation", n_clicks=0, className="building-modal-close"),
                             html.Div(id="validation-modal-content"),
+                        ],
+                    ),
+                ],
+            ),
+
+            # ============================================================
+            # CONSISTENCY RESULTS MODAL
+            # ============================================================
+            html.Div(
+                id="consistency-modal",
+                className="building-modal building-modal-hidden",
+                children=[
+                    html.Div(className="building-modal-backdrop"),
+                    html.Div(
+                        className="building-modal-box",
+                        children=[
+                            html.Button("\u2715", id="btn-close-consistency", n_clicks=0, className="building-modal-close"),
+                            html.Div(id="consistency-modal-content"),
                         ],
                     ),
                 ],

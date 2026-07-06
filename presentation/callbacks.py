@@ -192,3 +192,29 @@ def register(app, sim):
         results_content = panels.build_validation_results(validation_output)
 
         return modal_visible, results_content
+
+
+    #---------------------------
+    # CONSISTENCY CALLBACK
+    #---------------------------
+    @app.callback(
+        Output("consistency-modal", "className"),
+        Output("consistency-modal-content", "children"),
+        Input("btn-consistency", "n_clicks"),
+        Input("btn-close-consistency", "n_clicks"),
+        prevent_initial_call=True,
+    )
+
+    def handle_consistency(consistency_clicks, close_clicks):
+
+        modal_hidden = "building-modal building-modal-hidden"
+        modal_visible = "building-modal"
+
+        trigger_id = callback_context.triggered[0]["prop_id"].split(".")[0]
+
+        if trigger_id == "btn-close-consistency":
+            return modal_hidden, []
+
+        content = panels.build_consistency_table(sim.gdf)
+
+        return modal_visible, content

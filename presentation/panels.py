@@ -144,30 +144,64 @@ def build_validation_results(validation_output):
     avg_simulated = sum(r["simulated_temp"] for r in results) / total_cases
     avg_error = sum(r["error"] for r in results) / total_cases
 
-    # Determine pass/fail status
-    if mse < 1.0:
-        status = "PASSED"
-        status_color = "#2ecc71"
-    else:
-        status = "FAILED"
-        status_color = "#e74c3c"
-
     return [
         html.Div("VALIDATION RESULTS", className="modal-building-name"),
         html.Div(str(total_cases) + " blocks validated", className="modal-building-id"),
         html.Hr(className="modal-divider"),
         html.Div("Expected (Avg)", className="modal-section-label"),
-        html.Div(str(round(avg_expected, 2)) + "\u00b0C", className="modal-building-name"),
+        html.Div("{:.3g}\u00b0C".format(avg_expected), className="modal-building-name"),
         html.Hr(className="modal-divider"),
         html.Div("Simulated (Avg)", className="modal-section-label"),
-        html.Div(str(round(avg_simulated, 2)) + "\u00b0C", className="modal-building-name"),
+        html.Div("{:.3g}\u00b0C".format(avg_simulated), className="modal-building-name"),
         html.Hr(className="modal-divider"),
         html.Div("Error (Avg)", className="modal-section-label"),
-        html.Div(str(round(avg_error, 4)) + "\u00b0C", className="modal-building-name"),
+        html.Div("{:.3g}\u00b0C".format(avg_error), className="modal-building-name"),
         html.Hr(className="modal-divider"),
         html.Div("Mean Squared Error (MSE)", className="modal-section-label"),
-        html.Div(str(mse), className="modal-building-name", style={"color": status_color}),
-        html.Hr(className="modal-divider"),
-        html.Div("Validation Status", className="modal-section-label"),
-        html.Div(status, className="modal-building-name", style={"color": status_color}),
+        html.Div("{:.3g}".format(mse), className="modal-building-name", style={"color": "#fff"}),
     ]
+
+
+#---------------------------
+# CONSISTENCY TABLE
+#---------------------------
+def build_consistency_table(gdf):
+    """Build a table showing 2022 vs 2023 vs 2024 base temps and Avg Diff."""
+
+    rows = []
+    blocks = gdf[["block_id", "base_temp_2022", "base_temp_2023", "base_temp_2024"]].drop_duplicates()
+    blocks = blocks.sort_values("block_id")
+
+    rows.append(html.Div(
+        className="modal-row",
+        children=[
+            html.Span("Block", className="modal-row-label"),
+            html.Span("2022", className="modal-row-value"),
+            html.Span("2023", className="modal-row-value"),
+            html.Span("2024", className="modal-row-value"),
+            html.Span("Avg Diff", className="modal-row-value"),
+        ],
+    ))
+    rows.append(html.Hr(className="modal-divider"))
+
+    for _, row in blocks.iterrows():
+        t22 = float(row["base_temp_2022"])
+        t23 = float(row["base_temp_2023"])
+        t24 = float(row["base_temp_2024"])
+        avg_diff = (abs(t23 - t22) + abs(t24 - t23)) / 2
+
+        rows.append(html.Div(
+            className="modal-row",
+            children=[
+                html.Span(str(int(row["block_id"])), className="modal-row-label"),
+                html.Span("{:.3g}".format(t22), className="modal-row-value"),
+                html.Span("{:.3g}".format(t23), className="modal-row-value"),
+                html.Span("{:.3g}".format(t24), className="modal-row-value"),
+                html.Span("{:.3g}".format(avg_diff), className="modal-row-value"),
+            ],
+        ))
+
+    return [
+        html.Div("DATA CONSISTENCY CHECK", className="modal-building-name"),
+        html.Hr(className="modal-divider"),
+    ] + rows

@@ -50,7 +50,7 @@ class TemperatureProcessor:
             Temperature_GeoData = geo_utils.GeoDataFrame({
                 'geometry': pixel_locations,
                 'surface_temperature': pixel_temps
-            }, crs="EPSG:4326")
+            }, crs=dataset.crs)
                 
             dataset.close()
             return Temperature_GeoData
