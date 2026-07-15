@@ -17,10 +17,5 @@ __pycache__/
 Thumbs.db
 .DS_Store
 
-# Project generated files
-presentation/assets/bootstrap-styles-guide.txt
-presentation/assets/technologies-guide.txt
-architecture-guide.txt
-
 # Dash debug
 *.log
