@@ -255,6 +255,32 @@ def build_layout(sim):
                 size="lg",
             ),
 
+            # RESET CONFIRMATION MODAL
+            dbc.Modal(
+                [
+                    dbc.ModalHeader(dbc.ModalTitle(html.Span(["⚠ Reset All Interventions"], style={"fontSize": "24px"})), style={"fontSize": "24px"}),
+                    dbc.ModalBody([
+                        html.Div("Are you sure you want to reset all interventions?", className="text-white mb-3", style={"fontSize": "20px"}),
+                        html.Div("This action cannot be undone. All placed interventions will be permanently removed.", className="text-white-50 mb-4", style={"fontSize": "16px"}),
+                        html.Div(
+                            className="d-flex gap-3 justify-content-end",
+                            children=[
+                                dbc.Button("Cancel", id="btn-cancel-reset", color="light", outline=True, className="px-4 py-2", style={"fontSize": "17px"}),
+                                dbc.Button("Yes, Reset All", id="btn-confirm-reset", color="danger", className="px-4 py-2", style={"fontSize": "17px", "fontWeight": "700"}),
+                            ],
+                        ),
+                    ]),
+                ],
+                id="reset-modal",
+                is_open=False,
+            ),
+
+            # Tooltips
+            dbc.Tooltip("Undo the last intervention placed", target="btn-undo", placement="bottom"),
+            dbc.Tooltip("Remove all interventions and start over", target="btn-reset", placement="bottom"),
+            dbc.Tooltip("Compare simulated results against published literature", target="btn-validate", placement="bottom"),
+            dbc.Tooltip("Check how consistent base temperatures are across 2022–2024", target="btn-consistency", placement="bottom"),
+
             # Hidden stores
             dcc.Store(id="store-active-tool"),
             html.Link(

@@ -73,21 +73,16 @@ def register(app, sim):
         Output("building-modal", "is_open"),
         Output("building-modal-content", "children"),
         Input("deck-map", "clickInfo"),
-        Input("btn-reset", "n_clicks"),
         Input("btn-undo", "n_clicks"),
         State("store-active-tool", "data"),
         prevent_initial_call=True,
     )
-    def handle_map_click(click_info, reset_clicks, undo_clicks, active_intervention):
+    def handle_map_click(click_info, undo_clicks, active_intervention):
 
         trigger_id = callback_context.triggered[0]["prop_id"].split(".")[0]
 
         if trigger_id == "btn-undo":
             sim.undo_last()
-            return map_builder.build_deck(sim).to_json(), panels.build_stats(sim), False, []
-
-        if trigger_id == "btn-reset":
-            sim.reset()
             return map_builder.build_deck(sim).to_json(), panels.build_stats(sim), False, []
 
         if trigger_id == "deck-map" and click_info:
@@ -131,3 +126,36 @@ def register(app, sim):
     def handle_consistency(consistency_clicks):
         content = panels.build_consistency_table(sim.gdf)
         return True, content
+
+
+    # Open reset confirmation modal when Reset All is clicked
+    @app.callback(
+        Output("reset-modal", "is_open"),
+        Input("btn-reset", "n_clicks"),
+        prevent_initial_call=True,
+    )
+    def open_reset_modal(clicks):
+        return True
+
+
+    # Close reset modal when Cancel is clicked
+    @app.callback(
+        Output("reset-modal", "is_open", allow_duplicate=True),
+        Input("btn-cancel-reset", "n_clicks"),
+        prevent_initial_call=True,
+    )
+    def close_reset_modal(clicks):
+        return False
+
+
+    # Perform reset when user confirms
+    @app.callback(
+        Output("deck-map", "data", allow_duplicate=True),
+        Output("stats-panel", "children", allow_duplicate=True),
+        Output("reset-modal", "is_open", allow_duplicate=True),
+        Input("btn-confirm-reset", "n_clicks"),
+        prevent_initial_call=True,
+    )
+    def handle_confirm_reset(clicks):
+        sim.reset()
+        return map_builder.build_deck(sim).to_json(), panels.build_stats(sim), False
