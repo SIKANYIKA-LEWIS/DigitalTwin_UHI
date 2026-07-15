@@ -3,7 +3,7 @@ Digital Twin for Urban Heat Island (UHI) Mitigation is my Final Year Computer Sc
 
 1. LANGUAGES
    Backend:  Python 3.10+ (all logic)
-   Frontend: HTML / CSS / JavaScript (served by Dash)
+   Frontend: Dash + Bootstrap
 
 2. MAP DISPLAY
    deck.gl (via pydeck library) + Carto Positron basemap tiles
