@@ -1,0 +1,26 @@
+# Virtual environment
+.venv/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Environment
+.env
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Project generated files
+presentation/assets/bootstrap-styles-guide.txt
+presentation/assets/technologies-guide.txt
+architecture-guide.txt
+
+# Dash debug
+*.log
