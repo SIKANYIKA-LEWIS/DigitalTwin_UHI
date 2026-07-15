@@ -276,10 +276,19 @@ def build_layout(sim):
             ),
 
             # Tooltips
-            dbc.Tooltip("Undo the last intervention placed", target="btn-undo", placement="bottom"),
-            dbc.Tooltip("Remove all interventions and start over", target="btn-reset", placement="bottom"),
             dbc.Tooltip("Compare simulated results against published literature", target="btn-validate", placement="bottom"),
             dbc.Tooltip("Check how consistent base temperatures are across 2022–2024", target="btn-consistency", placement="bottom"),
+
+            # Error toast notification
+            dbc.Toast(
+                id="error-toast",
+                header="Something went wrong",
+                icon="danger",
+                is_open=False,
+                dismissable=True,
+                duration=5000,
+                style={"position": "fixed", "top": 20, "right": 20, "zIndex": 9999, "minWidth": "350px"},
+            ),
 
             # Hidden stores
             dcc.Store(id="store-active-tool"),

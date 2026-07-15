@@ -72,6 +72,8 @@ def register(app, sim):
         Output("stats-panel", "children", allow_duplicate=True),
         Output("building-modal", "is_open"),
         Output("building-modal-content", "children"),
+        Output("error-toast", "is_open"),
+        Output("error-toast", "children"),
         Input("deck-map", "clickInfo"),
         Input("btn-undo", "n_clicks"),
         State("store-active-tool", "data"),
@@ -79,56 +81,69 @@ def register(app, sim):
     )
     def handle_map_click(click_info, undo_clicks, active_intervention):
 
-        trigger_id = callback_context.triggered[0]["prop_id"].split(".")[0]
+        try:
+            trigger_id = callback_context.triggered[0]["prop_id"].split(".")[0]
 
-        if trigger_id == "btn-undo":
-            sim.undo_last()
-            return map_builder.build_deck(sim).to_json(), panels.build_stats(sim), False, []
+            if trigger_id == "btn-undo":
+                sim.undo_last()
+                return map_builder.build_deck(sim).to_json(), panels.build_stats(sim), False, [], False, ""
 
-        if trigger_id == "deck-map" and click_info:
-            clicked_object = click_info.get("object") or {}
-            block_id = clicked_object.get("block_id")
+            if trigger_id == "deck-map" and click_info:
+                clicked_object = click_info.get("object") or {}
+                block_id = clicked_object.get("block_id")
 
-            if block_id is None:
-                return no_update, no_update, no_update, no_update
+                if block_id is None:
+                    return no_update, no_update, no_update, no_update, False, ""
 
-            building_info = sim.block_summary(int(block_id))
-            modal_content = panels.build_modal(building_info)
+                building_info = sim.block_summary(int(block_id))
+                modal_content = panels.build_modal(building_info)
 
-            if not active_intervention:
-                return no_update, no_update, True, modal_content
+                if not active_intervention:
+                    return no_update, no_update, True, modal_content, False, ""
 
-            result = sim.place_intervention(int(block_id), active_intervention)
+                result = sim.place_intervention(int(block_id), active_intervention)
 
-            return map_builder.build_deck(sim).to_json(), panels.build_stats(sim), False, []
+                return map_builder.build_deck(sim).to_json(), panels.build_stats(sim), False, [], False, ""
 
-        return no_update, no_update, False, []
+            return no_update, no_update, False, [], False, ""
+
+        except Exception as e:
+            return no_update, no_update, no_update, no_update, True, "An unexpected error occurred. Please try clicking a different building."
 
 
     @app.callback(
         Output("validation-modal", "is_open"),
         Output("validation-modal-content", "children"),
+        Output("error-toast", "is_open", allow_duplicate=True),
+        Output("error-toast", "children", allow_duplicate=True),
         Input("btn-validate", "n_clicks"),
         prevent_initial_call=True,
     )
     def handle_validate(validate_clicks):
-        validation_output = ValidationModel.Run_Validation(sim)
-        results_content = panels.build_validation_results(validation_output)
-        return True, results_content
+        try:
+            validation_output = ValidationModel.Run_Validation(sim)
+            results_content = panels.build_validation_results(validation_output)
+            return True, results_content, False, ""
+        except Exception as e:
+            return True, [html.Div("Unable to run validation. Make sure you have placed at least one intervention.", className="text-white")], False, ""
 
 
     @app.callback(
         Output("consistency-modal", "is_open"),
         Output("consistency-modal-content", "children"),
+        Output("error-toast", "is_open", allow_duplicate=True),
+        Output("error-toast", "children", allow_duplicate=True),
         Input("btn-consistency", "n_clicks"),
         prevent_initial_call=True,
     )
     def handle_consistency(consistency_clicks):
-        content = panels.build_consistency_table(sim.gdf)
-        return True, content
+        try:
+            content = panels.build_consistency_table(sim.gdf)
+            return True, content, False, ""
+        except Exception as e:
+            return True, [html.Div("Unable to load consistency data. Please check the data files.", className="text-white")], False, ""
 
 
-    # Open reset confirmation modal when Reset All is clicked
     @app.callback(
         Output("reset-modal", "is_open"),
         Input("btn-reset", "n_clicks"),
@@ -138,7 +153,6 @@ def register(app, sim):
         return True
 
 
-    # Close reset modal when Cancel is clicked
     @app.callback(
         Output("reset-modal", "is_open", allow_duplicate=True),
         Input("btn-cancel-reset", "n_clicks"),
@@ -148,7 +162,6 @@ def register(app, sim):
         return False
 
 
-    # Perform reset when user confirms
     @app.callback(
         Output("deck-map", "data", allow_duplicate=True),
         Output("stats-panel", "children", allow_duplicate=True),
@@ -157,5 +170,8 @@ def register(app, sim):
         prevent_initial_call=True,
     )
     def handle_confirm_reset(clicks):
-        sim.reset()
-        return map_builder.build_deck(sim).to_json(), panels.build_stats(sim), False
+        try:
+            sim.reset()
+            return map_builder.build_deck(sim).to_json(), panels.build_stats(sim), False
+        except Exception:
+            return no_update, no_update, False
