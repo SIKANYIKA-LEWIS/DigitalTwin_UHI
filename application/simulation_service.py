@@ -133,7 +133,9 @@ class SimulationService:
 
 
 
-    # --- Find the hottest blocks ---
+    # ------------------------------
+    #  Find the hottest blocks 
+    # -----------------------------
     def get_hotspots(self, threshold_percentile=75):
 
         threshold = float(np.percentile(self.gdf["current_temp"], threshold_percentile))

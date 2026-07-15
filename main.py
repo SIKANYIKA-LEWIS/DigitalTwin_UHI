@@ -1,4 +1,5 @@
 import dash
+import dash_bootstrap_components as dbc
 from config.app_config import AppConfig
 from infrastructure.buildings_loader import BuildingsLoader, Load_Roads
 from infrastructure.temperature_processor import TemperatureProcessor
@@ -35,6 +36,7 @@ class KitweDigitalTwinApplication:
             title="DIGITALTWIN UHI MITIGATION",
             suppress_callback_exceptions=True,
             assets_folder="presentation/assets",
+            external_stylesheets=[dbc.themes.DARKLY],
         )
         app.layout = build_layout(sim)
         register_callbacks(app, sim)

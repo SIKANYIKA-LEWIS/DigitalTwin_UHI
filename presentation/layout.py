@@ -1,3 +1,4 @@
+import dash_bootstrap_components as dbc
 import dash_deck
 from dash import dcc, html
 from presentation import map_builder
@@ -6,44 +7,42 @@ from presentation import panels
 
 def build_layout(sim):
 
-    # Build initial stats to display on load
     initial_stats = panels.build_stats(sim)
 
     return html.Div(
-        className="app",
+        className="d-flex vh-100 overflow-hidden",
         children=[
 
-            # ============================================================
-            # LEFT SIDEBAR STARTS HERE
-            # ============================================================
+            # LEFT SIDEBAR
             html.Div(
-                className="sidebar",
+                className="sidebar d-flex flex-column",
                 children=[
 
-                    # -- Sidebar header --
+                    # Sidebar header
                     html.Div(
-                        className="sidebar-header",
+                        className="text-center p-3 border-bottom border-secondary",
                         children=[
-                            html.Div("DIGITAL TWIN UHI MITIGATION", className="sidebar-title"),
-                            html.Div(" Simulation-Based Decision Support System", className="sidebar-tagline"),
+                            html.Div("DIGITAL TWIN UHI MITIGATION", className="fw-bold text-white", style={"fontSize": "26px", "letterSpacing": "2px"}),
+                            html.Div("Simulation-Based Decision Support System", className="text-white", style={"fontSize": "18px"}),
                         ],
                     ),
 
-                    # -- Intervention cards section --
-                    html.Div("INTERVENTIONS", className="section-label"),
+                    # Interventions section
+                    html.Div("INTERVENTIONS", className="small fw-bold text-uppercase px-3 pt-3 pb-1 text-white", style={"letterSpacing": "2px"}),
 
                     html.Div(
-                        className="cards-container",
+                        className="px-3 pb-2 d-flex flex-column gap-2",
                         children=[
 
                             # Tree card
                             html.Div(
                                 id="card-tree",
                                 n_clicks=0,
-                                className="intervention-item",
+                                className="card bg-dark border-secondary d-flex flex-column align-items-center py-2 px-3",
+                                style={"cursor": "grab"},
                                 children=[
                                     html.Img(src="/assets/images/tree.png", className="intervention-img"),
-                                    html.Span("Trees", className="intervention-label"),
+                                    html.Span("Trees", className="mt-1 fw-semibold text-white", style={"fontSize": "20px"}),
                                 ],
                             ),
 
@@ -51,10 +50,11 @@ def build_layout(sim):
                             html.Div(
                                 id="card-greenroof",
                                 n_clicks=0,
-                                className="intervention-item",
+                                className="card bg-dark border-secondary d-flex flex-column align-items-center py-2 px-3",
+                                style={"cursor": "grab"},
                                 children=[
                                     html.Img(src="/assets/images/greenroof.png", className="intervention-img"),
-                                    html.Span("Green Roof", className="intervention-label"),
+                                    html.Span("Green Roof", className="mt-1 fw-semibold text-white", style={"fontSize": "20px"}),
                                 ],
                             ),
 
@@ -62,69 +62,64 @@ def build_layout(sim):
                             html.Div(
                                 id="card-leaves",
                                 n_clicks=0,
-                                className="intervention-item",
+                                className="card bg-dark border-secondary d-flex flex-column align-items-center py-2 px-3",
+                                style={"cursor": "grab"},
                                 children=[
                                     html.Img(src="/assets/images/leaves.png", className="intervention-img"),
-                                    html.Span("Leaf Litter", className="intervention-label"),
+                                    html.Span("Leaf Litter", className="mt-1 fw-semibold text-white", style={"fontSize": "20px"}),
                                 ],
                             ),
 
                         ],
                     ),
 
-                    # -- Active tool display with initial guide --
+                    # Active tool display
                     html.Div(
                         id="active-tool-display",
-                        className="active-tool",
+                        className="px-3 pb-2",
                         children=html.Div(
-                            "Click to select an intervention to get started",
-                            className="guide-message",
+                            "Click an intervention to get started",
+                            className="p-4 text-center text-white border border-success border-2 rounded-3",
+                            style={"background": "rgba(255,255,255,0.08)", "fontSize": "17px"},
                         ),
                     ),
 
-                    html.Hr(className="divider"),
+                    html.Hr(className="mx-3 text-secondary"),
 
-                    # -- Spacer --
-                    html.Div(className="sidebar-spacer"),
+                    # Spacer
+                    html.Div(className="flex-grow-1"),
 
-                    # -- Undo and Reset buttons --
+                    # Buttons
                     html.Div(
-                        className="button-row",
+                        className="px-3 pb-2 d-flex gap-2",
                         children=[
-                            html.Button("\u21a9  Undo", id="btn-undo", n_clicks=0, className="btn-undo"),
-                            html.Button("\u21ba  Reset All", id="btn-reset", n_clicks=0, className="btn-reset"),
+                            dbc.Button("↩ Undo", id="btn-undo", n_clicks=0, color="light", outline=True, className="flex-fill", style={"fontSize": "18px", "padding": "14px"}),
+                            dbc.Button("↺ Reset All", id="btn-reset", n_clicks=0, color="danger", outline=True, className="flex-fill", style={"fontSize": "18px", "padding": "14px"}),
                         ],
                     ),
 
-                    # -- Validate button --
                     html.Div(
-                        className="button-row",
+                        className="px-3 pb-2 d-flex gap-2",
                         children=[
-                            html.Button("\u2714  Validate Results", id="btn-validate", n_clicks=0, className="btn-undo"),
+                            dbc.Button("✔ Validate Results", id="btn-validate", n_clicks=0, color="light", outline=True, className="flex-fill", style={"fontSize": "18px", "padding": "14px"}),
                         ],
                     ),
 
-                    # -- Consistency Check button --
                     html.Div(
-                        className="button-row",
+                        className="px-3 pb-2 d-flex gap-2",
                         children=[
-                            html.Button("\u2194  Data Consistency", id="btn-consistency", n_clicks=0, className="btn-undo"),
+                            dbc.Button("↔ Data Consistency", id="btn-consistency", n_clicks=0, color="light", outline=True, className="flex-fill", style={"fontSize": "18px", "padding": "14px"}),
                         ],
                     ),
 
                 ],
             ),
-            #------- LEFT SIDE SIDEBAR ENDS HERE ------------#
-       
 
-            # ============================================================
-            # RIGHT SIDEBAR STARTS HERE - THE MAP AREA
-            # ============================================================
+            # MAP AREA
             html.Div(
                 className="map-area",
                 children=[
 
-                    # -- The map itself --
                     dash_deck.DeckGL(
                         id="deck-map",
                         data=map_builder.build_deck(sim).to_json(),
@@ -133,90 +128,90 @@ def build_layout(sim):
                         style={"width": "100%", "height": "100%"},
                     ),
 
-                    # -- Temperature Scale --
+                    # Temperature legend
                     html.Div(
                         className="temp-legend",
                         children=[
-                            html.Div("Temperature (\u00b0C)", className="temp-legend-title"),
+                            html.Div("Temperature (°C)", className="temp-legend-title"),
                             html.Div(
-                                className="temp-legend-bar",
+                                className="d-flex align-items-center gap-2",
                                 children=[
-                                    html.Span("43\u00b0", className="temp-legend-min"),
+                                    html.Span("43°", className="temp-legend-min"),
                                     html.Div(className="temp-legend-gradient"),
-                                    html.Span("45\u00b0", className="temp-legend-max"),
+                                    html.Span("45°", className="temp-legend-max"),
                                 ],
                             ),
                         ],
                     ),
 
-                    # -- Simulation stats overlay (right side of map) --
+                    # Stats overlay
                     html.Div(
                         className="stats-overlay",
                         children=[
-                            html.Div("SIMULATION STATS", className="stats-overlay-title"),
+                            html.Div("SIMULATION STATS", className="small fw-bold text-uppercase mb-1 text-white", style={"letterSpacing": "2px"}),
                             html.Div(id="stats-panel", className="stats-panel", children=initial_stats),
 
-                            # -- Cooling effect card --
+                            # Cooling effects card
                             html.Div(
                                 id="cooling-card",
-                                className="cooling-card",
+                                className="card bg-dark bg-opacity-75 border-secondary p-3 mt-2",
                                 children=[
-                                    html.Div("COOLING EFFECTS", className="cooling-card-title"),
-                                    html.Div(className="cooling-card-body", children=[
-                                        html.Div(className="cooling-row", children=[
+                                    html.Div("COOLING EFFECTS", className="small fw-bold text-uppercase mb-2 text-white", style={"letterSpacing": "2px"}),
+                                    html.Div(className="d-flex flex-column gap-2", children=[
+                                        html.Div(className="d-flex align-items-center gap-2", children=[
                                             html.Img(src="/assets/images/tree.png", className="cooling-icon"),
-                                            html.Span("Trees", className="cooling-label"),
-                                            html.Span("\u2212" + str(round(0.0450  * 43, 2)) + "\u00b0C", className="cooling-value"),
+                                            html.Span("Trees", className="flex-fill text-white"),
+                                            html.Span("−" + str(round(0.0450  * 43, 2)) + "°C", className="fw-bold text-white text-end"),
                                         ]),
-                                        html.Div(className="cooling-row", children=[
+                                        html.Div(className="d-flex align-items-center gap-2", children=[
                                             html.Img(src="/assets/images/greenroof.png", className="cooling-icon"),
-                                            html.Span("Green Roof", className="cooling-label"),
-                                            html.Span("\u2212" + str(round(0.0250 * 200, 2)) + "\u00b0C", className="cooling-value"),
+                                            html.Span("Green Roof", className="flex-fill text-white"),
+                                            html.Span("−" + str(round(0.0250 * 200, 2)) + "°C", className="fw-bold text-white text-end"),
                                         ]),
-                                        html.Div(className="cooling-row", children=[
+                                        html.Div(className="d-flex align-items-center gap-2", children=[
                                             html.Img(src="/assets/images/leaves.png", className="cooling-icon"),
-                                            html.Span("Leaf Litter", className="cooling-label"),
-                                            html.Span("\u2212" + str(round(0.0180  * 100, 2)) + "\u00b0C", className="cooling-value"),
+                                            html.Span("Leaf Litter", className="flex-fill text-white"),
+                                            html.Span("−" + str(round(0.0180  * 100, 2)) + "°C", className="fw-bold text-white text-end"),
                                         ]),
                                     ]),
                                 ],
                             ),
 
-                            # -- Temperature  card --
+                            # Temp scale card
                             html.Div(
-                                className="cooling-card",
+                                className="card bg-dark bg-opacity-75 border-secondary p-3 mt-2",
                                 children=[
-                                    html.Div("TEMPERATURE SCALE", className="cooling-card-title"),
-                                    html.Div(className="cooling-card-body", children=[
-                                        html.Div(className="legend-row", children=[
+                                    html.Div("TEMPERATURE SCALE", className="small fw-bold text-uppercase mb-2 text-white", style={"letterSpacing": "2px"}),
+                                    html.Div(className="d-flex flex-column gap-2", children=[
+                                        html.Div(className="d-flex align-items-center gap-2", children=[
                                             html.Span(className="legend-dot", style={"background": "#7b0000"}),
-                                            html.Span("Dark Red", className="cooling-label"),
-                                            html.Span("Very Hot", className="legend-desc"),
+                                            html.Span("Dark Red", className="flex-fill text-white"),
+                                            html.Span("Very Hot", className="fw-semibold text-white text-end"),
                                         ]),
-                                        html.Div(className="legend-row", children=[
+                                        html.Div(className="d-flex align-items-center gap-2", children=[
                                             html.Span(className="legend-dot", style={"background": "#e74c3c"}),
-                                            html.Span("Red", className="cooling-label"),
-                                            html.Span("Hot", className="legend-desc"),
+                                            html.Span("Red", className="flex-fill text-white"),
+                                            html.Span("Hot", className="fw-semibold text-white text-end"),
                                         ]),
-                                        html.Div(className="legend-row", children=[
+                                        html.Div(className="d-flex align-items-center gap-2", children=[
                                             html.Span(className="legend-dot", style={"background": "#e67e22"}),
-                                            html.Span("Orange", className="cooling-label"),
-                                            html.Span("Warm", className="legend-desc"),
+                                            html.Span("Orange", className="flex-fill text-white"),
+                                            html.Span("Warm", className="fw-semibold text-white text-end"),
                                         ]),
-                                        html.Div(className="legend-row", children=[
+                                        html.Div(className="d-flex align-items-center gap-2", children=[
                                             html.Span(className="legend-dot", style={"background": "#f1c40f"}),
-                                            html.Span("Yellow", className="cooling-label"),
-                                            html.Span("Moderate", className="legend-desc"),
+                                            html.Span("Yellow", className="flex-fill text-white"),
+                                            html.Span("Moderate", className="fw-semibold text-white text-end"),
                                         ]),
-                                        html.Div(className="legend-row", children=[
+                                        html.Div(className="d-flex align-items-center gap-2", children=[
                                             html.Span(className="legend-dot", style={"background": "#2ecc71"}),
-                                            html.Span("Green", className="cooling-label"),
-                                            html.Span("Cool", className="legend-desc"),
+                                            html.Span("Green", className="flex-fill text-white"),
+                                            html.Span("Cool", className="fw-semibold text-white text-end"),
                                         ]),
-                                        html.Div(className="legend-row", children=[
+                                        html.Div(className="d-flex align-items-center gap-2", children=[
                                             html.Span(className="legend-dot", style={"background": "#3498db"}),
-                                            html.Span("Blue", className="cooling-label"),
-                                            html.Span("Very Cool", className="legend-desc"),
+                                            html.Span("Blue", className="flex-fill text-white"),
+                                            html.Span("Very Cool", className="fw-semibold text-white text-end"),
                                         ]),
                                     ]),
                                 ],
@@ -226,66 +221,41 @@ def build_layout(sim):
 
                 ],
             ),
-            #------- RIGHT SIDEBAR ENDS HERE ------------#
 
-
-            # ============================================================
-            # MODAL BOX (shows building details)
-            # ============================================================
-            html.Div(
+            # BUILDING INFO MODAL
+            dbc.Modal(
+                [
+                    dbc.ModalHeader(dbc.ModalTitle("Building Info")),
+                    dbc.ModalBody(id="building-modal-content"),
+                ],
                 id="building-modal",
-                className="building-modal building-modal-hidden",
-                children=[
-                    html.Div(className="building-modal-backdrop"),
-                    html.Div(
-                        className="building-modal-box",
-                        children=[
-                            html.Button("\u2715", id="btn-close-modal", n_clicks=0, className="building-modal-close"),
-                            html.Div(id="building-modal-content"),
-                        ],
-                    ),
-                ],
+                is_open=False,
+                size="lg",
             ),
 
-            # ============================================================
-            # VALIDATION RESULTS MODAL
-            # ============================================================
-            html.Div(
+            # VALIDATION MODAL
+            dbc.Modal(
+                [
+                    dbc.ModalHeader(dbc.ModalTitle("Validation Results")),
+                    dbc.ModalBody(id="validation-modal-content"),
+                ],
                 id="validation-modal",
-                className="building-modal building-modal-hidden",
-                children=[
-                    html.Div(className="building-modal-backdrop"),
-                    html.Div(
-                        className="building-modal-box",
-                        children=[
-                            html.Button("\u2715", id="btn-close-validation", n_clicks=0, className="building-modal-close"),
-                            html.Div(id="validation-modal-content"),
-                        ],
-                    ),
-                ],
+                is_open=False,
+                size="lg",
             ),
 
-            # ============================================================
-            # CONSISTENCY RESULTS MODAL
-            # ============================================================
-            html.Div(
+            # CONSISTENCY MODAL
+            dbc.Modal(
+                [
+                    dbc.ModalHeader(dbc.ModalTitle("Data Consistency Check")),
+                    dbc.ModalBody(id="consistency-modal-content"),
+                ],
                 id="consistency-modal",
-                className="building-modal building-modal-hidden",
-                children=[
-                    html.Div(className="building-modal-backdrop"),
-                    html.Div(
-                        className="building-modal-box",
-                        children=[
-                            html.Button("\u2715", id="btn-close-consistency", n_clicks=0, className="building-modal-close"),
-                            html.Div(id="consistency-modal-content"),
-                        ],
-                    ),
-                ],
+                is_open=False,
+                size="lg",
             ),
 
-            # ============================================================
-            # HIDDEN STUFF (stores and scripts)
-            # ============================================================
+            # Hidden stores
             dcc.Store(id="store-active-tool"),
             html.Link(
                 rel="stylesheet",

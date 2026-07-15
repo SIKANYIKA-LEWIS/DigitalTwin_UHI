@@ -2,187 +2,154 @@ from dash import html
 from config.app_config import AppConfig
 
 
-#---------------------------
-# BUILDING STATS PANEL
-#---------------------------
 def build_stats(sim):
-    
+
     total_cooling = sim.total_reduction()
 
-    # Calculate total cooling per intervention type
     type_cooling = {"tree": 0.0, "greenroof": 0.0, "leaves": 0.0}
     for iv in sim.interventions:
         type_cooling[iv["type"]] += iv["cooling_effect"]
 
-    # Intervention types
     intervention_types = [
         ("/assets/images/tree.png", "tree"),
         ("/assets/images/greenroof.png", "greenroof"),
         ("/assets/images/leaves.png", "leaves"),
     ]
 
-    # Add stats information about each intervention type
     stats_item = []
     for icon, name in intervention_types:
         info = AppConfig.INTERVENTION_META[name]
         row = html.Div(
-            className="stats-row",
+            className="d-flex justify-content-between align-items-center py-2",
             children=[
                 html.Span(
-                    [html.Img(src=icon, className="stats-row-icon"), info["label"]],
-                    className="stats-row-label",
+                    [html.Img(src=icon, className="stats-row-icon me-2"), info["label"]],
+                    className="text-white",
                 ),
                 html.Span(
-                    "\u2212" + str(round(type_cooling[name], 3)) + "\u00b0C",
-                    className="stats-row-count stats-row-count-" + name,
+                    "−" + str(round(type_cooling[name], 3)) + "°C",
+                    className="fw-semibold text-white",
                 ),
             ],
         )
         stats_item.append(row)
 
-    # Put it all together in one card
     card = html.Div(
-        className="stats-card",
+        className="card bg-dark bg-opacity-75 border-secondary p-3 mb-2",
         children=[
             html.Div(
-                className="stats-total",
+                className="d-flex align-items-baseline",
                 children=[
-                    html.Span("\u2212" + str(round(total_cooling, 3)), className="stats-value"),
-                    html.Span(" \u00b0C cooled", className="stats-label"),
+                    html.Span("−" + str(round(total_cooling, 3)), className="text-white fw-bold", style={"fontSize": "36px"}),
+                    html.Span(" °C cooled", className="text-white ms-1"),
                 ],
             ),
-            html.Hr(className="stats-divider"),
+            html.Hr(className="text-secondary my-2"),
         ] + stats_item,
     )
 
     return [card]
 
 
-#------------------------------
-# BUILDING Details Modal
-#------------------------------
 def build_modal(block_summary):
-  
+
     if block_summary is None:
         return []
 
     content = []
 
-    # --- Block ID ---
-    content.append(html.Div("Block ID: " + str(block_summary["block_id"]), className="modal-building-id"))
+    content.append(html.Div("Block ID: " + str(block_summary["block_id"]), className="text-white mb-3"))
 
-    # --- Temperature Section ---
-    content.append(html.Div("Temperature", className="modal-section-label"))
-    content.append(_modal_row("Current Temperature", str(round(block_summary["current_temp"], 1)) + "\u00b0C"))
-    content.append(_modal_row("Baseline Temperature", str(round(block_summary["base_temp"], 1)) + "\u00b0C"))
+    content.append(html.Div("Temperature", className="fw-bold text-uppercase small mt-3 mb-2 text-white", style={"letterSpacing": "2px"}))
+    content.append(_modal_row("Current Temperature", str(round(block_summary["current_temp"], 1)) + "°C"))
+    content.append(_modal_row("Baseline Temperature", str(round(block_summary["base_temp"], 1)) + "°C"))
 
-    # --- Cooling effect ---
-    content.append(_modal_row("Cooling Effect", "\u2212" + str(round(block_summary["reduction"], 3)) + "\u00b0C"))
+    content.append(_modal_row("Cooling Effect", "−" + str(round(block_summary["reduction"], 3)) + "°C"))
 
-    # --- Footprint Area if available ---
     if block_summary.get("area_m2"):
-        content.append(_modal_row("Footprint Area", str(round(block_summary["area_m2"])) + " m\u00b2"))
+        content.append(_modal_row("Footprint Area", str(round(block_summary["area_m2"])) + " m²"))
 
-    # --- Interventions Section ---
-    content.append(html.Div("Interventions", className="modal-section-label"))
+    content.append(html.Div("Interventions", className="fw-bold text-uppercase small mt-3 mb-2 text-white", style={"letterSpacing": "2px"}))
 
     if block_summary["interventions"]:
         for iv in block_summary["interventions"]:
             info = AppConfig.INTERVENTION_META[iv["type"]]
-            cooling = "\u2212" + str(round(iv["cooling_effect"], 3)) + "\u00b0C"
+            cooling = "−" + str(round(iv["cooling_effect"], 3)) + "°C"
             content.append(html.Div(
-                className="modal-intervention-row",
+                className="d-flex justify-content-between align-items-center py-2",
                 children=[
                     html.Span(
-                        [html.Img(src=info["icon"], className="modal-intervention-icon"), info["label"]],
-                        className="modal-intervention-name",
+                        [html.Img(src=info["icon"], className="modal-intervention-icon me-2"), info["label"]],
+                        className="fw-semibold text-white",
                     ),
-                    html.Span(cooling, className="modal-intervention-delta"),
+                    html.Span(cooling, className="fw-bold text-white"),
                 ],
             ))
-
     else:
-        content.append(html.Div("No interventions placed yet", className="modal-no-interventions"))
+        content.append(html.Div("No interventions placed yet", className="text-white fst-italic py-2"))
 
     return content
 
 
-#------------------------
-# CREATE MODAL ROW
-#------------------------
 def _modal_row(label, value):
     return html.Div(
-        className="modal-row",
+        className="d-flex justify-content-between align-items-center py-2 border-bottom border-secondary",
         children=[
-            html.Span(label, className="modal-row-label"),
-            html.Span(value, className="modal-row-value"),
+            html.Span(label, className="fw-bold text-white"),
+            html.Span(value, className="fw-bold text-white"),
         ],
     )
 
 
-#---------------------------
-# VALIDATION RESULTS PANEL
-#---------------------------
 def build_validation_results(validation_output):
-    """Build the HTML for the validation results modal."""
 
     results = validation_output["results"]
     mse = validation_output["mse"]
     total_cases = validation_output["total_cases"]
 
-    # Handle no interventions case
     if total_cases == 0:
         msg = validation_output.get("status", "No cases to validate")
         return [
-            html.Div("VALIDATION RESULTS", className="modal-building-name"),
-            html.Hr(className="modal-divider"),
-            html.Div(msg, className="modal-section-label"),
+            html.Div(msg, className="text-white"),
         ]
 
-    # Compute aggregate stats
     avg_expected = sum(r["expected_temp"] for r in results) / total_cases
     avg_simulated = sum(r["simulated_temp"] for r in results) / total_cases
     avg_error = sum(r["error"] for r in results) / total_cases
 
     return [
-        html.Div("VALIDATION RESULTS", className="modal-building-name"),
-        html.Div(str(total_cases) + " blocks validated", className="modal-building-id"),
-        html.Hr(className="modal-divider"),
-        html.Div("Expected (Avg)", className="modal-section-label"),
-        html.Div("{:.3g}\u00b0C".format(avg_expected), className="modal-building-name"),
-        html.Hr(className="modal-divider"),
-        html.Div("Simulated (Avg)", className="modal-section-label"),
-        html.Div("{:.3g}\u00b0C".format(avg_simulated), className="modal-building-name"),
-        html.Hr(className="modal-divider"),
-        html.Div("Error (Avg)", className="modal-section-label"),
-        html.Div("{:.3g}\u00b0C".format(avg_error), className="modal-building-name"),
-        html.Hr(className="modal-divider"),
-        html.Div("Mean Squared Error (MSE)", className="modal-section-label"),
-        html.Div("{:.3g}".format(mse), className="modal-building-name", style={"color": "#fff"}),
+        html.Div(str(total_cases) + " blocks validated", className="text-white mb-3"),
+        html.Hr(className="text-secondary"),
+        html.Div("Expected (Avg)", className="fw-bold text-uppercase small mt-2 mb-1 text-white", style={"letterSpacing": "2px"}),
+        html.Div("{:.3g}°C".format(avg_expected), className="text-white", style={"fontSize": "24px"}),
+        html.Hr(className="text-secondary"),
+        html.Div("Simulated (Avg)", className="fw-bold text-uppercase small mt-2 mb-1 text-white", style={"letterSpacing": "2px"}),
+        html.Div("{:.3g}°C".format(avg_simulated), className="text-white", style={"fontSize": "24px"}),
+        html.Hr(className="text-secondary"),
+        html.Div("Error (Avg)", className="fw-bold text-uppercase small mt-2 mb-1 text-white", style={"letterSpacing": "2px"}),
+        html.Div("{:.3g}°C".format(avg_error), className="text-white", style={"fontSize": "24px"}),
+        html.Hr(className="text-secondary"),
+        html.Div("Mean Squared Error (MSE)", className="fw-bold text-uppercase small mt-2 mb-1 text-white", style={"letterSpacing": "2px"}),
+        html.Div("{:.3g}".format(mse), className="text-white", style={"fontSize": "24px"}),
     ]
 
 
-#---------------------------
-# CONSISTENCY TABLE
-#---------------------------
 def build_consistency_table(gdf):
-    """Build a table showing 2022 vs 2023 vs 2024 base temps and Avg Diff."""
 
     rows = []
     blocks = gdf[["block_id", "base_temp_2022", "base_temp_2023", "base_temp_2024"]].drop_duplicates()
     blocks = blocks.sort_values("block_id")
 
     rows.append(html.Div(
-        className="modal-row",
+        className="d-flex justify-content-between align-items-center py-2 border-bottom border-secondary fw-bold text-white",
         children=[
-            html.Span("Block", className="modal-row-label"),
-            html.Span("2022", className="modal-row-value"),
-            html.Span("2023", className="modal-row-value"),
-            html.Span("2024", className="modal-row-value"),
-            html.Span("Avg Diff", className="modal-row-value"),
+            html.Span("Block", className="flex-fill"),
+            html.Span("2022", className="flex-fill text-center"),
+            html.Span("2023", className="flex-fill text-center"),
+            html.Span("2024", className="flex-fill text-center"),
+            html.Span("Avg Diff", className="flex-fill text-end"),
         ],
     ))
-    rows.append(html.Hr(className="modal-divider"))
 
     for _, row in blocks.iterrows():
         t22 = float(row["base_temp_2022"])
@@ -191,17 +158,14 @@ def build_consistency_table(gdf):
         avg_diff = (abs(t23 - t22) + abs(t24 - t23)) / 2
 
         rows.append(html.Div(
-            className="modal-row",
+            className="d-flex justify-content-between align-items-center py-2 text-white",
             children=[
-                html.Span(str(int(row["block_id"])), className="modal-row-label"),
-                html.Span("{:.3g}".format(t22), className="modal-row-value"),
-                html.Span("{:.3g}".format(t23), className="modal-row-value"),
-                html.Span("{:.3g}".format(t24), className="modal-row-value"),
-                html.Span("{:.3g}".format(avg_diff), className="modal-row-value"),
+                html.Span(str(int(row["block_id"])), className="flex-fill fw-bold"),
+                html.Span("{:.3g}".format(t22), className="flex-fill text-center"),
+                html.Span("{:.3g}".format(t23), className="flex-fill text-center"),
+                html.Span("{:.3g}".format(t24), className="flex-fill text-center"),
+                html.Span("{:.3g}".format(avg_diff), className="flex-fill text-end"),
             ],
         ))
 
-    return [
-        html.Div("DATA CONSISTENCY CHECK", className="modal-building-name"),
-        html.Hr(className="modal-divider"),
-    ] + rows
+    return rows
