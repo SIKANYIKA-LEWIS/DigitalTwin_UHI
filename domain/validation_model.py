@@ -10,6 +10,109 @@ class ValidationModel:
         "leaves": 0.015,
     }
 
+    # Names used when displaying validation tables
+    INTERVENTION_NAMES = {
+        "tree": "Tree",
+        "greenroof": "Green Roof",
+        "leaves": "Leaf Litter",
+    }
+
+
+    #---------------------------------------
+    # BUILD COEFFICIENT VALIDATION RESULTS
+    #---------------------------------------
+    def Coefficient_Results():
+
+        results = []
+
+        for intervention_type, name in ValidationModel.INTERVENTION_NAMES.items():
+            literature_coefficient = ValidationModel.LITERATURE_COEFFS[intervention_type]
+            system_coefficient = CoolingModel.CoolingCoefficient(intervention_type)
+
+            results.append({
+                "name": name,
+                "literature": literature_coefficient,
+                "system": system_coefficient,
+                "rmse": round(abs(system_coefficient - literature_coefficient), 4),
+            })
+
+        return results
+
+
+    #---------------------------------------
+    # BUILD QUANTITY VALIDATION RESULTS
+    #---------------------------------------
+    def Quantity_Results(sim):
+
+        results = []
+        base_temperatures = [float(value) for value in sim.gdf["base_temp"]]
+
+        for intervention_type, name in ValidationModel.INTERVENTION_NAMES.items():
+            intervention_results = []
+            system_coefficient = CoolingModel.CoolingCoefficient(intervention_type)
+            literature_coefficient = ValidationModel.LITERATURE_COEFFS[intervention_type]
+            area = CoolingModel.DefaultArea(intervention_type)
+
+            for quantity in range(1, 6):
+                system_temperatures = []
+                literature_temperatures = []
+
+                for base_temperature in base_temperatures:
+                    system_cooling = system_coefficient * area * quantity
+                    literature_cooling = literature_coefficient * area * quantity
+
+                    system_temperatures.append(max(base_temperature - system_cooling, CoolingModel.MIN_TEMP))
+                    literature_temperatures.append(base_temperature - literature_cooling)
+
+                simulated_temperature = sum(system_temperatures) / len(system_temperatures)
+                synthetic_temperature = sum(literature_temperatures) / len(literature_temperatures)
+
+                squared_errors = []
+                for i in range(len(system_temperatures)):
+                    error = system_temperatures[i] - literature_temperatures[i]
+                    squared_errors.append(error * error)
+
+                rmse = (sum(squared_errors) / len(squared_errors)) ** 0.5
+
+                intervention_results.append({
+                    "quantity": quantity,
+                    "simulated": round(simulated_temperature, 2),
+                    "synthetic": round(synthetic_temperature, 2),
+                    "rmse": round(rmse, 4),
+                })
+
+            results.append({
+                "name": name,
+                "results": intervention_results,
+            })
+
+        return results
+
+
+    #---------------------------------------
+    # BUILD INTERVENTION PERFORMANCE RESULTS
+    #---------------------------------------
+    def Performance_Results(sim, quantity_results):
+
+        base_temperatures = [float(value) for value in sim.gdf["base_temp"]]
+        average_base_temperature = sum(base_temperatures) / len(base_temperatures)
+        performance_results = []
+
+        for intervention in quantity_results:
+            simulated_temperatures = [result["simulated"] for result in intervention["results"]]
+            average_simulated_temperature = sum(simulated_temperatures) / len(simulated_temperatures)
+
+            performance_results.append({
+                "name": intervention["name"],
+                "base_temperature": round(average_base_temperature, 2),
+                "simulated_temperature": round(average_simulated_temperature, 2),
+                "temperature_reduction": round(average_base_temperature - average_simulated_temperature, 2),
+            })
+
+        performance_results.sort(key=lambda result: result["temperature_reduction"], reverse=True)
+
+        return performance_results
+
     #---------------------------
     # RUN VALIDATION
     #---------------------------
@@ -18,6 +121,10 @@ class ValidationModel:
 
         results = []
         total_squared_error = 0
+
+        coefficient_results = ValidationModel.Coefficient_Results()
+        quantity_results = ValidationModel.Quantity_Results(sim)
+        performance_results = ValidationModel.Performance_Results(sim, quantity_results)
 
         blocks_with_interventions = set()
         for iv in sim.interventions:
@@ -28,7 +135,10 @@ class ValidationModel:
                 "results": [],
                 "mse": 0,
                 "total_cases": 0,
-                "status": "No interventions placed to validate"
+                "status": "No interventions placed to validate",
+                "coefficient_results": coefficient_results,
+                "quantity_results": quantity_results,
+                "performance_results": performance_results,
             }
 
         for block_id in blocks_with_interventions:
@@ -77,4 +187,7 @@ class ValidationModel:
             "results": results,
             "mse": round(mse, 6),
             "total_cases": number_of_cases,
+            "coefficient_results": coefficient_results,
+            "quantity_results": quantity_results,
+            "performance_results": performance_results,
         }

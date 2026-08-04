@@ -129,22 +129,6 @@ def register(app, sim):
 
 
     @app.callback(
-        Output("consistency-modal", "is_open"),
-        Output("consistency-modal-content", "children"),
-        Output("error-toast", "is_open", allow_duplicate=True),
-        Output("error-toast", "children", allow_duplicate=True),
-        Input("btn-consistency", "n_clicks"),
-        prevent_initial_call=True,
-    )
-    def handle_consistency(consistency_clicks):
-        try:
-            content = panels.build_consistency_table(sim.gdf)
-            return True, content, False, ""
-        except Exception as e:
-            return True, [html.Div("Unable to load consistency data. Please check the data files.", className="text-white")], False, ""
-
-
-    @app.callback(
         Output("reset-modal", "is_open"),
         Input("btn-reset", "n_clicks"),
         prevent_initial_call=True,

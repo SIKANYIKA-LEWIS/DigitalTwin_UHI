@@ -18,14 +18,7 @@ class KitweDigitalTwinApplication:
 
         buildings_gdf = BuildingsLoader.Load_Footprints(self._footprints_path)
 
-        buildings_gdf_2022 = TemperatureProcessor.Process_Real_Temperatures(AppConfig.TEMPERATURE_PATH_2022, buildings_gdf.copy())
-        buildings_gdf["base_temp_2022"] = buildings_gdf_2022["base_temp"]
-
-        buildings_gdf_2023 = TemperatureProcessor.Process_Real_Temperatures(AppConfig.TEMPERATURE_PATH_2023, buildings_gdf.copy())
-        buildings_gdf["base_temp_2023"] = buildings_gdf_2023["base_temp"]
-
         buildings_gdf = TemperatureProcessor.Process_Real_Temperatures(AppConfig.TEMPERATURE_PATH, buildings_gdf)
-        buildings_gdf["base_temp_2024"] = buildings_gdf["base_temp"]
 
         roads_gdf = Load_Roads(AppConfig.ROADS_PATH)
 

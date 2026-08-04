@@ -125,6 +125,58 @@ body {
     height: 22px;
 }
 
+/*---------------------------------
+   VALIDATION MODAL STYLE
+----------------------------------*/
+.validation-modal-content,
+.validation-modal-content .modal-body {
+    background: #fff;
+    color: #111;
+}
+
+.validation-modal-content .modal-header,
+.validation-modal-content .modal-title {
+    background: #fff;
+    color: #111;
+}
+
+.validation-modal-content .modal-header {
+    justify-content: center;
+}
+
+.validation-modal-content .btn-close {
+    filter: brightness(0);
+    opacity: 1;
+}
+
+.validation-modal-content h5 {
+    text-align: center;
+}
+
+.validation-modal-content .text-white {
+    color: #111 !important;
+}
+
+.validation-table,
+.validation-table th,
+.validation-table td {
+    background: #fff !important;
+    color: #111 !important;
+    border-color: #111 !important;
+}
+
+.validation-table {
+    width: 85%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.validation-table thead th {
+    background: #e9ecef !important;
+    color: #111 !important;
+    font-weight: 700;
+}
+
 /*-------------------------
    LEGEND DOT STYLE
 --------------------------*/

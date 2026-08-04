@@ -3,6 +3,7 @@ import dash_deck
 from dash import dcc, html
 from presentation import map_builder
 from presentation import panels
+from domain.cooling_model import CoolingModel
 
 
 def build_layout(sim):
@@ -91,7 +92,7 @@ def build_layout(sim):
 
                     # Buttons
                     html.Div(
-                        className="px-3 pb-2 d-flex gap-2",
+                        className="px-3 pb-4 d-flex gap-2",
                         children=[
                             dbc.Button("↩ Undo", id="btn-undo", n_clicks=0, color="light", outline=True, className="flex-fill", style={"fontSize": "18px", "padding": "14px"}),
                             dbc.Button("↺ Reset All", id="btn-reset", n_clicks=0, color="danger", outline=True, className="flex-fill", style={"fontSize": "18px", "padding": "14px"}),
@@ -99,16 +100,9 @@ def build_layout(sim):
                     ),
 
                     html.Div(
-                        className="px-3 pb-2 d-flex gap-2",
+                        className="px-3 pb-4 d-flex gap-2",
                         children=[
                             dbc.Button("✔ Validate Results", id="btn-validate", n_clicks=0, color="light", outline=True, className="flex-fill", style={"fontSize": "18px", "padding": "14px"}),
-                        ],
-                    ),
-
-                    html.Div(
-                        className="px-3 pb-2 d-flex gap-2",
-                        children=[
-                            dbc.Button("↔ Data Consistency", id="btn-consistency", n_clicks=0, color="light", outline=True, className="flex-fill", style={"fontSize": "18px", "padding": "14px"}),
                         ],
                     ),
 
@@ -156,22 +150,22 @@ def build_layout(sim):
                                 id="cooling-card",
                                 className="card bg-dark bg-opacity-75 border-secondary p-3 mt-2",
                                 children=[
-                                    html.Div("COOLING EFFECTS", className="small fw-bold text-uppercase mb-2 text-white", style={"letterSpacing": "2px"}),
+                                     html.Div("COOLING COEFFICIENTS", className="small fw-bold text-uppercase mb-2 text-white", style={"letterSpacing": "2px"}),
                                     html.Div(className="d-flex flex-column gap-2", children=[
                                         html.Div(className="d-flex align-items-center gap-2", children=[
                                             html.Img(src="/assets/images/tree.png", className="cooling-icon"),
                                             html.Span("Trees", className="flex-fill text-white"),
-                                            html.Span("−" + str(round(0.0450  * 43, 2)) + "°C", className="fw-bold text-white text-end"),
+                                             html.Span("C = {:.4f} °C/m²".format(CoolingModel.CoolingCoefficient("tree")), className="fw-bold text-white text-end"),
                                         ]),
                                         html.Div(className="d-flex align-items-center gap-2", children=[
                                             html.Img(src="/assets/images/greenroof.png", className="cooling-icon"),
                                             html.Span("Green Roof", className="flex-fill text-white"),
-                                            html.Span("−" + str(round(0.0250 * 200, 2)) + "°C", className="fw-bold text-white text-end"),
+                                             html.Span("C = {:.4f} °C/m²".format(CoolingModel.CoolingCoefficient("greenroof")), className="fw-bold text-white text-end"),
                                         ]),
                                         html.Div(className="d-flex align-items-center gap-2", children=[
                                             html.Img(src="/assets/images/leaves.png", className="cooling-icon"),
                                             html.Span("Leaf Litter", className="flex-fill text-white"),
-                                            html.Span("−" + str(round(0.0180  * 100, 2)) + "°C", className="fw-bold text-white text-end"),
+                                             html.Span("C = {:.4f} °C/m²".format(CoolingModel.CoolingCoefficient("leaves")), className="fw-bold text-white text-end"),
                                         ]),
                                     ]),
                                 ],
@@ -236,23 +230,17 @@ def build_layout(sim):
             # VALIDATION MODAL
             dbc.Modal(
                 [
-                    dbc.ModalHeader(dbc.ModalTitle("Validation Results")),
+                    dbc.ModalHeader(dbc.ModalTitle("VALIDATE RESULTS", className="fw-bold text-center w-100")),
                     dbc.ModalBody(id="validation-modal-content"),
                 ],
                 id="validation-modal",
                 is_open=False,
-                size="lg",
-            ),
-
-            # CONSISTENCY MODAL
-            dbc.Modal(
-                [
-                    dbc.ModalHeader(dbc.ModalTitle("Data Consistency Check")),
-                    dbc.ModalBody(id="consistency-modal-content"),
-                ],
-                id="consistency-modal",
-                is_open=False,
-                size="lg",
+                size="xl",
+                centered=True,
+                scrollable=True,
+                dialogStyle={"maxWidth": "94vw", "width": "94vw", "margin": "auto"},
+                contentStyle={"height": "95vh", "maxHeight": "95vh"},
+                contentClassName="validation-modal-content",
             ),
 
             # RESET CONFIRMATION MODAL
@@ -277,8 +265,6 @@ def build_layout(sim):
 
             # Tooltips
             dbc.Tooltip("Compare simulated results against published literature", target="btn-validate", placement="bottom"),
-            dbc.Tooltip("Check how consistent base temperatures are across 2022–2024", target="btn-consistency", placement="bottom"),
-
             # Error toast notification
             dbc.Toast(
                 id="error-toast",
