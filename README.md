@@ -49,7 +49,7 @@ Digital Twin for Urban Heat Island (UHI) Mitigation is my Final Year Computer Sc
    Step 6: Install required packages
    ---------------------------------------------------------------
    Type this and press Enter (wait 5-10 minutes):
-      pip install -r requirements.txt
+       python -m pip install -r requirements.txt
 
    ---------------------------------------------------------------
    Step 7: Start the application

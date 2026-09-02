@@ -109,7 +109,71 @@ def build_validation_results(validation_output):
     quantity_results = validation_output["quantity_results"]
     performance_results = validation_output["performance_results"]
 
-    content = [
+    content = []
+
+    # Keep the live result at the top so it is the first table users see.
+    content += [
+         html.H5(
+             [
+                 "Current Simulation Validation ",
+                 html.Span(
+                     "LIVE",
+                     className="badge rounded-pill ms-2",
+                     style={
+                         "backgroundColor": "#20c997",
+                         "color": "#071b16",
+                         "fontSize": "11px",
+                         "letterSpacing": "1px",
+                         "verticalAlign": "middle",
+                     },
+                 ),
+             ],
+             className="text-white mb-2",
+             style={"borderLeft": "4px solid #20c997", "paddingLeft": "10px"},
+         ),
+         html.Div(
+             "This table uses the interventions currently placed on the map.",
+             className="mb-3 px-3 py-2 rounded",
+             style={
+                 "color": "#123c32",
+                 "backgroundColor": "#d1e7dd",
+                 "fontWeight": "600",
+             },
+         ),
+    ]
+
+    if total_cases == 0:
+        msg = validation_output.get("status", "No cases to validate")
+        content.append(html.Div(msg, className="text-white"))
+    else:
+        rmse = (sum(r["squared_error"] for r in results) / total_cases) ** 0.5
+        content += [
+            _build_current_simulation_table(results),
+            html.Div(
+                "Overall RMSE: {:.4f} °C across {} active block(s).".format(rmse, total_cases),
+                className="text-white fw-bold text-center mt-3",
+            ),
+            html.H6("Conclusion", className="text-white fw-bold text-center mt-4 mb-2"),
+            _build_rmse_conclusion(rmse),
+        ]
+
+    content += [
+        html.Div(
+            [
+                html.Hr(className="text-secondary my-3"),
+                html.Div(
+                    "REFERENCE TABLES",
+                    className="text-center fw-bold rounded py-2",
+                    style={
+                        "color": "#343a40",
+                        "backgroundColor": "#f1f3f5",
+                        "letterSpacing": "2px",
+                        "fontSize": "13px",
+                    },
+                ),
+            ],
+            className="mt-4 mb-3",
+        ),
         html.Div(
             [
                 "RMSE shows, in °C, how closely the system’s simulated temperatures are to the temperatures calculated using literature coefficients, where a lower value means better agreement.",
@@ -127,43 +191,66 @@ def build_validation_results(validation_output):
             },
         ),
         _build_rmse_key(),
-        html.H5("Table 1: Intervention Coefficient", className="text-white mt-2 mb-2"),
+        html.H5("Reference Table 1: Intervention Coefficient", className="text-white mt-2 mb-2"),
         _build_coefficient_table(coefficient_results),
-        html.H5("Table 2: Intervention Validation", className="text-white mt-4 mb-2"),
+        html.H5("Reference Table 2: Intervention Validation", className="text-white mt-4 mb-2"),
         _build_quantity_table(quantity_results),
-        html.H5("Table 3: Intervention Performance Comparison", className="text-white mt-4 mb-2"),
+        html.H5("Reference Table 3: Intervention Performance Comparison", className="text-white mt-4 mb-2"),
         _build_performance_table(performance_results),
-        html.Hr(className="text-secondary my-4"),
-        html.H5("Current Simulation Validation", className="text-white mb-3"),
-    ]
-
-    if total_cases == 0:
-        msg = validation_output.get("status", "No cases to validate")
-        content.append(html.Div(msg, className="text-white"))
-        return content
-
-    avg_expected = sum(r["expected_temp"] for r in results) / total_cases
-    avg_simulated = sum(r["simulated_temp"] for r in results) / total_cases
-    rmse = (sum(r["squared_error"] for r in results) / total_cases) ** 0.5
-
-    content += [
-        html.Table([
-            html.Thead(html.Tr([
-                html.Th("Expected Literature Temperature"),
-                html.Th("Simulated Temperature"),
-                html.Th("RMSE"),
-            ])),
-            html.Tbody(html.Tr([
-                html.Td("{:.2f} °C".format(avg_expected)),
-                html.Td("{:.2f} °C".format(avg_simulated)),
-                html.Td("{:.4f} °C".format(rmse)),
-            ])),
-        ], className="table validation-table table-bordered table-lg text-center mb-0", style={"fontSize": "16px", "verticalAlign": "middle"}),
-        html.H6("Conclusion", className="text-white fw-bold text-center mt-4 mb-2"),
-        _build_rmse_conclusion(rmse),
     ]
 
     return content
+
+
+def _build_current_simulation_table(results):
+    """Render values from the interventions currently in the simulation."""
+    rows = []
+    for result in results:
+        error_color = "#20c997" if abs(result["error"]) <= 0.5 else "#ffc107" if abs(result["error"]) <= 1 else "#ff6b6b"
+        rows.append(html.Tr([
+            html.Td(str(result["block_id"]), className="fw-bold"),
+            html.Td(
+                html.Span(
+                    result["interventions"],
+                    className="badge",
+                    style={"backgroundColor": "#145c4a", "color": "#d8fff4", "fontSize": "13px"},
+                )
+            ),
+            html.Td("{:.2f} °C".format(result["base_temp"])),
+            html.Td("{:.2f} °C".format(result["expected_temp"])),
+            html.Td(
+                "{:.2f} °C".format(result["simulated_temp"]),
+                style={"backgroundColor": "#123f38", "color": "#8ff5d5", "fontWeight": "700"},
+            ),
+            html.Td(
+                "{:.2f} °C".format(result["base_temp"] - result["simulated_temp"]),
+                style={"color": "#20c997", "fontWeight": "700"},
+            ),
+            html.Td(
+                "{:.4f} °C".format(result["error"]),
+                style={"color": error_color, "fontWeight": "700"},
+            ),
+        ]))
+
+    table = html.Table([
+        html.Thead(html.Tr([
+            html.Th("Block"),
+            html.Th("Active Interventions"),
+            html.Th("Baseline"),
+            html.Th("Expected Literature"),
+            html.Th("Current Simulated"),
+            html.Th("Actual Reduction"),
+            html.Th("Error"),
+        ])),
+        html.Tbody(rows),
+    ], className="table validation-table table-bordered table-lg text-center mb-0", style={
+        "fontSize": "16px",
+        "verticalAlign": "middle",
+        "borderColor": "#20c997",
+        "boxShadow": "0 0 12px rgba(32, 201, 151, 0.18)",
+    })
+
+    return html.Div(table, className="table-responsive")
 
 
 #---------------------------------------
