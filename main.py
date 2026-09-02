@@ -1,5 +1,6 @@
 import dash
 import dash_bootstrap_components as dbc
+import os
 from config.app_config import AppConfig
 from infrastructure.buildings_loader import BuildingsLoader, Load_Roads
 from infrastructure.temperature_processor import TemperatureProcessor
@@ -14,8 +15,7 @@ class KitweDigitalTwinApplication:
         self._footprints_path = footprints_path
         self._port = port
 
-    def run(self):
-
+    def create_app(self):
         buildings_gdf = BuildingsLoader.Load_Footprints(self._footprints_path)
 
         buildings_gdf = TemperatureProcessor.Process_Real_Temperatures(AppConfig.TEMPERATURE_PATH, buildings_gdf)
@@ -33,9 +33,24 @@ class KitweDigitalTwinApplication:
         )
         app.layout = build_layout(sim)
         register_callbacks(app, sim)
+        return app
 
-        app.run(debug=True, port=self._port)
+    def run(self):
+        app = self.create_app()
+        app.run(
+            debug=True,
+            host="0.0.0.0",
+            port=int(os.environ.get("PORT", self._port)),
+        )
+
+
+app = KitweDigitalTwinApplication().create_app()
+server = app.server
 
 
 if __name__ == "__main__":
-    KitweDigitalTwinApplication().run()
+    app.run(
+        debug=True,
+        host="0.0.0.0",
+        port=int(os.environ.get("PORT", 8050)),
+    )
