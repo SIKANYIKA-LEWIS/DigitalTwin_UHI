@@ -101,7 +101,7 @@ def register(app, sim):
                 if not active_intervention:
                     return no_update, no_update, True, modal_content, False, ""
 
-                result = sim.place_intervention(int(block_id), active_intervention)
+                sim.place_intervention(int(block_id), active_intervention)
 
                 return map_builder.build_deck(sim).to_json(), panels.build_stats(sim), False, [], False, ""
 

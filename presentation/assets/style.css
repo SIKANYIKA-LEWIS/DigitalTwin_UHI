@@ -178,6 +178,63 @@ body {
 }
 
 /*-------------------------
+   RESPONSIVE LAYOUT
+--------------------------*/
+@media (max-width: 1200px) {
+    .sidebar {
+        width: 320px;
+        min-width: 320px;
+    }
+
+    .temp-legend {
+        min-width: 0;
+        width: calc(100% - 32px);
+    }
+}
+
+@media (max-width: 768px) {
+    body {
+        overflow-y: auto;
+    }
+
+    .d-flex.vh-100 {
+        height: auto !important;
+        min-height: 100vh;
+        overflow: visible !important;
+    }
+
+    .sidebar {
+        width: 100%;
+        min-width: 0;
+        height: auto;
+        max-height: 48vh;
+        overflow-y: auto;
+    }
+
+    .map-area {
+        flex: none;
+        width: 100%;
+        height: 52vh;
+        min-height: 420px;
+    }
+
+    .temp-legend {
+        top: 10px;
+        width: calc(100% - 24px);
+        padding: 8px 12px;
+    }
+
+    .stats-overlay {
+        top: 62px;
+        right: 8px;
+        min-width: 170px;
+        max-width: calc(100% - 16px);
+        transform: scale(0.85);
+        transform-origin: top right;
+    }
+}
+
+/*-------------------------
    LEGEND DOT STYLE
 --------------------------*/
 .legend-dot {
