@@ -24,7 +24,6 @@ class SimulationService:
         reference_building = affected_buildings[0]
 
         # Calculate the cooling effect of this intervention
-        # (uses default area for the intervention type when area_m2 is None)
         cooling_effect = CoolingModel.ComputeCooling(intervention_type, area_m2)
         current_temperature = self.gdf.at[reference_building, "current_temp"]
         new_temperature = max(current_temperature - cooling_effect, CoolingModel.MIN_TEMP)

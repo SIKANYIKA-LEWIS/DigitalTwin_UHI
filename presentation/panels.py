@@ -179,7 +179,7 @@ def build_validation_results(validation_output):
             [
                 "RMSE shows, in °C, how closely the system’s simulated temperatures are to the temperatures calculated using literature coefficients, where a lower value means better agreement.",
                 html.Br(),
-                "Formula: RMSE = √[Σ(Simulated Temperature − Literature Temperature)² ÷ Number of Blocks]",
+                "Formula: RMSE = √[Σ(Simulated Temperature − Synthetic Temperature)² ÷ Number of Blocks]",
             ],
             className="text-center fw-bold mb-3",
             style={

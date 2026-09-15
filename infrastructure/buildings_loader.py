@@ -102,7 +102,7 @@ class BuildingsLoader:
         heights = BuildingsLoader.Extract_Building_Heights(buildings)
         buildings["height"] = heights
 
-        buildings["base_temp"] = 36.0
+        buildings["base_temp"] = 33.0
         buildings_utm = buildings.to_crs("EPSG:32735")
 
         # GET CENTROID COORDINATES
