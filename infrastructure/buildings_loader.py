@@ -2,9 +2,9 @@ import geopandas as geo_utils
 
 class BuildingsLoader:
 
-    """---------------------
-    EXTRACT BUILDING NAMES
-    ---------------------"""
+    #------------------------
+    #EXTRACT BUILDING NAMES
+    #------------------------    
     @staticmethod
     def Extract_Building_Names(buildings):
         names = []
@@ -19,8 +19,10 @@ class BuildingsLoader:
             names.append(name)
 
         return names
-        
-
+       
+    #-------------------------
+    #EXTRACT BUILDING HEIGHTS
+    #-------------------------    
     @staticmethod
     def Extract_Building_Heights(buildings):
         heights = []
@@ -37,9 +39,9 @@ class BuildingsLoader:
         return heights
 
 
-    """---------------------
-    GENERATE BUILDING BLOCKS
-    ---------------------"""
+    #----------------------------
+    #  GENERATE BUILDING BLOCKS
+    #----------------------------
     @staticmethod
     def Generate_Building_Blocks(Building_footprints):
         
@@ -81,7 +83,7 @@ class BuildingsLoader:
 
     #-------------------------
     #LOAD BUILDING FOOTPRINTS
-    #--------------------------
+    #-------------------------
     @staticmethod
     def Load_Footprints(filepath):
         
@@ -129,16 +131,17 @@ class BuildingsLoader:
         return result
 
 
-"""---------------------
-LOAD ROADS FROM FILE
----------------------"""
-def Load_Roads(filepath):
+    #---------------------
+    #LOAD ROADS FROM FILE
+    #---------------------
+    @staticmethod
+    def Load_Roads(filepath):
 
-    roads_data = geo_utils.read_file(filepath)
-    roads_data = roads_data.to_crs("EPSG:4326")
+        roads_data = geo_utils.read_file(filepath)
+        roads_data = roads_data.to_crs("EPSG:4326")
 
-    if "name" not in roads_data.columns:
-        roads_data["name"] = "Unnamed Road"
-    return roads_data[["name", "geometry"]]
+        if "name" not in roads_data.columns:
+            roads_data["name"] = "Unnamed Road"
+        return roads_data[["name", "geometry"]]
 
 

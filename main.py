@@ -2,7 +2,7 @@ import dash
 import dash_bootstrap_components as dbc
 import os
 from config.app_config import AppConfig
-from infrastructure.buildings_loader import BuildingsLoader, Load_Roads
+from infrastructure.buildings_loader import BuildingsLoader
 from infrastructure.temperature_processor import TemperatureProcessor
 from application.simulation_service import SimulationService
 from presentation.layout import build_layout
@@ -20,7 +20,7 @@ class KitweDigitalTwinApplication:
 
         buildings_gdf = TemperatureProcessor.Process_Real_Temperatures(AppConfig.TEMPERATURE_PATH, buildings_gdf)
 
-        roads_gdf = Load_Roads(AppConfig.ROADS_PATH)
+        roads_gdf = BuildingsLoader.Load_Roads(AppConfig.ROADS_PATH)
 
         sim = SimulationService(buildings_gdf)
 

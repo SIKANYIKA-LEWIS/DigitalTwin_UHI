@@ -1,3 +1,5 @@
+import math
+
 from dash import html
 from config.app_config import AppConfig
 
@@ -107,7 +109,6 @@ def build_validation_results(validation_output):
     total_cases = validation_output["total_cases"]
     coefficient_results = validation_output["coefficient_results"]
     quantity_results = validation_output["quantity_results"]
-    performance_results = validation_output["performance_results"]
 
     content = []
 
@@ -146,11 +147,11 @@ def build_validation_results(validation_output):
         msg = validation_output.get("status", "No cases to validate")
         content.append(html.Div(msg, className="text-white"))
     else:
-        rmse = (sum(r["squared_error"] for r in results) / total_cases) ** 0.5
+        rmse = validation_output["rmse"]
         content += [
             _build_current_simulation_table(results),
             html.Div(
-                "Overall RMSE: {:.4f} °C across {} active block(s).".format(rmse, total_cases),
+                "Average RMSE: {:.4f} °C across {} active block(s).".format(rmse, total_cases),
                 className="text-white fw-bold text-center mt-3",
             ),
             html.H6("Conclusion", className="text-white fw-bold text-center mt-4 mb-2"),
@@ -195,8 +196,6 @@ def build_validation_results(validation_output):
         _build_coefficient_table(coefficient_results),
         html.H5("Reference Table 2: Intervention Validation", className="text-white mt-4 mb-2"),
         _build_quantity_table(quantity_results),
-        html.H5("Reference Table 3: Intervention Performance Comparison", className="text-white mt-4 mb-2"),
-        _build_performance_table(performance_results),
     ]
 
     return content
@@ -223,11 +222,7 @@ def _build_current_simulation_table(results):
                 style={"backgroundColor": "#123f38", "color": "#8ff5d5", "fontWeight": "700"},
             ),
             html.Td(
-                "{:.2f} °C".format(result["base_temp"] - result["simulated_temp"]),
-                style={"color": "#20c997", "fontWeight": "700"},
-            ),
-            html.Td(
-                "{:.4f} °C".format(result["error"]),
+                "{:.4f} °C".format(math.sqrt(result["squared_error"])),
                 style={"color": error_color, "fontWeight": "700"},
             ),
         ]))
@@ -236,11 +231,10 @@ def _build_current_simulation_table(results):
         html.Thead(html.Tr([
             html.Th("Block"),
             html.Th("Active Interventions"),
-            html.Th("Baseline"),
-            html.Th("Expected Literature"),
-            html.Th("Current Simulated"),
-            html.Th("Actual Reduction"),
-            html.Th("Error"),
+            html.Th("Baseline Temperature"),
+            html.Th("Expected Reduced Synthetic Temperature"),
+            html.Th("Current Reduced Simulated Temperature"),
+            html.Th("RMSE"),
         ])),
         html.Tbody(rows),
     ], className="table validation-table table-bordered table-lg text-center mb-0", style={
@@ -326,37 +320,6 @@ def _build_quantity_table(quantity_results):
     )
 
     return html.Div(table, className="table-responsive")
-
-
-#---------------------------------------
-# BUILD PERFORMANCE COMPARISON TABLE
-#---------------------------------------
-def _build_performance_table(performance_results):
-
-    header = html.Thead(html.Tr([
-        html.Th("Intervention"),
-        html.Th("Base Temperature"),
-        html.Th("Average Simulated Temperature"),
-        html.Th("Temperature Reduction"),
-    ]))
-
-    rows = []
-    for result in performance_results:
-        rows.append(html.Tr([
-            html.Td(result["name"], className="fw-bold"),
-            html.Td("{:.2f} °C".format(result["base_temperature"])),
-            html.Td("{:.2f} °C".format(result["simulated_temperature"])),
-            html.Td("{:.2f} °C".format(result["temperature_reduction"])),
-        ]))
-
-    return html.Div(
-        html.Table(
-            [header, html.Tbody(rows)],
-            className="table validation-table table-bordered table-lg text-center mb-0",
-            style={"fontSize": "16px", "verticalAlign": "middle"},
-        ),
-        className="table-responsive",
-    )
 
 
 #---------------------------------------

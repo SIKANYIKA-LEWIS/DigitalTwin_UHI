@@ -9,9 +9,9 @@ class TemperatureProcessor:
     ADDITIVE_CONST = 149.0
     KELVIN_OFFSET = 273.15
 
-    """---------------------
-    LOAD AND PROCESS TEMPERATURE DATA
-    ---------------------"""
+    #-----------------------------------
+    #LOAD AND PROCESS TEMPERATURE DATA
+    #-----------------------------------
     @staticmethod
     def Load_Temperature(filepath):
         
@@ -61,9 +61,9 @@ class TemperatureProcessor:
             }
 
     
-    """---------------------
-    CONVERT DN TO CELSIUS
-    ---------------------"""
+    #-----------------------
+    #CONVERT TO CELSIUS
+    #-----------------------
     @staticmethod
     def Convert_Celsius(dn_value):
         temperature_kelvin = TemperatureProcessor.SCALE_FACTOR * dn_value + TemperatureProcessor.ADDITIVE_CONST
@@ -71,9 +71,9 @@ class TemperatureProcessor:
         return round(temperature_celsius, 2)
 
 
-    """------------------------------------------
-    AGGREGATE TEMPERATURES TO BUILDING BLOCKS
-    ------------------------------------------"""
+    #------------------------------------------
+    #AGGREGATE TEMPERATURES TO BUILDING BLOCKS
+    #------------------------------------------
     @staticmethod
     def Block_Temperatures(temperature_data, buildings_data, temp_column="surface_temperature"):
 
@@ -188,9 +188,9 @@ class TemperatureProcessor:
 
 
 
-    """----------------------------------
-    PROCESS SATLLITE SURFACE TEMPERATURES
-    ----------------------------------"""
+    #--------------------------------------
+    #PROCESS SATLLITE SURFACE TEMPERATURES
+    #--------------------------------------
     @staticmethod
     def Process_Real_Temperatures(temperature_file, buildings_data):
      
