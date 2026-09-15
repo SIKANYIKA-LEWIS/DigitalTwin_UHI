@@ -20,6 +20,10 @@ def register(app, sim):
         State("store-active-tool", "data"),
         prevent_initial_call=True,
     )
+    
+    #----------------------------
+    # SELECT INTERVENTION TOOL
+    #----------------------------
     def select_tool(tree_clicks, greenroof_clicks, leaves_clicks, active_intervention):
 
         if not callback_context.triggered:
@@ -79,6 +83,10 @@ def register(app, sim):
         State("store-active-tool", "data"),
         prevent_initial_call=True,
     )
+    
+    #-----------------------------
+    # HANDLE MAP CLICKS AND UNDO
+    #-----------------------------
     def handle_map_click(click_info, undo_clicks, active_intervention):
 
         try:
@@ -119,6 +127,10 @@ def register(app, sim):
         Input("btn-validate", "n_clicks"),
         prevent_initial_call=True,
     )
+    
+    #-----------------------------
+    # VALIDATE SIMULATION RESULTS
+    #-----------------------------
     def handle_validate(validate_clicks):
         try:
             validation_output = ValidationModel.Run_Validation(sim)
@@ -133,6 +145,10 @@ def register(app, sim):
         Input("btn-reset", "n_clicks"),
         prevent_initial_call=True,
     )
+    
+    #-----------------------------
+    # OPEN RESET CONFIRMATION
+    #-----------------------------
     def open_reset_modal(clicks):
         return True
 
@@ -142,6 +158,10 @@ def register(app, sim):
         Input("btn-cancel-reset", "n_clicks"),
         prevent_initial_call=True,
     )
+    
+    #-----------------------------
+    # CLOSE RESET CONFIRMATION
+    #-----------------------------    
     def close_reset_modal(clicks):
         return False
 
@@ -153,6 +173,10 @@ def register(app, sim):
         Input("btn-confirm-reset", "n_clicks"),
         prevent_initial_call=True,
     )
+    
+    #-----------------------------
+    # RESET SIMULATION
+    #-----------------------------
     def handle_confirm_reset(clicks):
         try:
             sim.reset()

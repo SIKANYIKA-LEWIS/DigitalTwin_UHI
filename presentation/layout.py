@@ -6,6 +6,9 @@ from presentation import panels
 from domain.cooling_model import CoolingModel
 
 
+#------------------------------
+# BUILD APPLICATION LAYOUT
+#-----------------------------
 def build_layout(sim):
 
     initial_stats = panels.build_stats(sim)
@@ -19,7 +22,7 @@ def build_layout(sim):
                 className="sidebar d-flex flex-column",
                 children=[
 
-                    # Sidebar header
+                    # SIDEBAR HEADER
                     html.Div(
                         className="text-center p-3 border-bottom border-secondary",
                         children=[
@@ -28,7 +31,7 @@ def build_layout(sim):
                         ],
                     ),
 
-                    # Interventions section
+                    # INTERVENTIONS SECTION
                     html.Div("INTERVENTIONS", className="small fw-bold text-uppercase px-3 pt-3 pb-1 text-white", style={"letterSpacing": "2px"}),
 
                     html.Div(
@@ -74,7 +77,7 @@ def build_layout(sim):
                         ],
                     ),
 
-                    # Active tool display
+                    # ACTIVE TOOL DISPLAY
                     html.Div(
                         id="active-tool-display",
                         className="px-3 pb-2",
@@ -87,10 +90,9 @@ def build_layout(sim):
 
                     html.Hr(className="mx-3 text-secondary"),
 
-                    # Spacer
+                    # SIDEBAR BUTTONS
                     html.Div(className="flex-grow-1"),
 
-                    # Buttons
                     html.Div(
                         className="px-3 pb-4 d-flex gap-2",
                         children=[
@@ -122,7 +124,7 @@ def build_layout(sim):
                         style={"width": "100%", "height": "100%"},
                     ),
 
-                    # Temperature legend
+                    # TEMPERATURE LEGEND
                     html.Div(
                         className="temp-legend",
                         children=[
@@ -138,14 +140,14 @@ def build_layout(sim):
                         ],
                     ),
 
-                    # Stats overlay
+                    # SIMULATION STATS
                     html.Div(
                         className="stats-overlay",
                         children=[
                             html.Div("SIMULATION STATS", className="small fw-bold text-uppercase mb-1 text-white", style={"letterSpacing": "2px"}),
                             html.Div(id="stats-panel", className="stats-panel", children=initial_stats),
 
-                            # Cooling effects card
+                            # COOLING COEFFICIENTS
                             html.Div(
                                 id="cooling-card",
                                 className="card bg-dark bg-opacity-75 border-secondary p-3 mt-2",
@@ -171,7 +173,7 @@ def build_layout(sim):
                                 ],
                             ),
 
-                            # Temp scale card
+                            # TEMPERATURE SCALE
                             html.Div(
                                 className="card bg-dark bg-opacity-75 border-secondary p-3 mt-2",
                                 children=[
@@ -216,7 +218,7 @@ def build_layout(sim):
                 ],
             ),
 
-            # BUILDING INFO MODAL
+            # BUILDING INFORMATION MODAL
             dbc.Modal(
                 [
                     dbc.ModalHeader(dbc.ModalTitle("Building Info")),
@@ -263,9 +265,8 @@ def build_layout(sim):
                 is_open=False,
             ),
 
-            # Tooltips
+            # TOOLTIPS AND ERROR NOTIFICATION
             dbc.Tooltip("Compare simulated results against published literature", target="btn-validate", placement="bottom"),
-            # Error toast notification
             dbc.Toast(
                 id="error-toast",
                 header="Something went wrong",
@@ -276,7 +277,7 @@ def build_layout(sim):
                 style={"position": "fixed", "top": 20, "right": 20, "zIndex": 9999, "minWidth": "350px"},
             ),
 
-            # Hidden stores
+            # HIDDEN STORES AND FONT
             dcc.Store(id="store-active-tool"),
             html.Link(
                 rel="stylesheet",

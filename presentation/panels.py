@@ -4,14 +4,20 @@ from dash import html
 from config.app_config import AppConfig
 
 
+#-------------------
+# BUILD SIMULATION STATS
+#-------------------
 def build_stats(sim):
 
+    # CALCULATE TOTAL COOLING
     total_cooling = sim.total_reduction()
 
+    # CALCULATE COOLING BY INTERVENTION
     type_cooling = {"tree": 0.0, "greenroof": 0.0, "leaves": 0.0}
     for iv in sim.interventions:
         type_cooling[iv["type"]] += iv["cooling_effect"]
 
+    # BUILD INTERVENTION STATISTICS
     intervention_types = [
         ("/assets/images/tree.png", "tree"),
         ("/assets/images/greenroof.png", "greenroof"),
@@ -36,6 +42,7 @@ def build_stats(sim):
         )
         stats_item.append(row)
 
+    # BUILD STATISTICS CARD
     card = html.Div(
         className="card bg-dark bg-opacity-75 border-secondary p-3 mb-2",
         children=[
@@ -53,15 +60,21 @@ def build_stats(sim):
     return [card]
 
 
+#-------------------
+# BUILD BLOCK INFORMATION MODAL
+#-------------------
 def build_modal(block_summary):
 
+    # CHECK FOR MISSING BLOCK DATA
     if block_summary is None:
         return []
 
+    # BUILD BLOCK INFORMATION
     content = []
 
     content.append(html.Div("Block ID: " + str(block_summary["block_id"]), className="text-white mb-3"))
 
+    # BUILD TEMPERATURE INFORMATION
     content.append(html.Div("Temperature", className="fw-bold text-uppercase small mt-3 mb-2 text-white", style={"letterSpacing": "2px"}))
     content.append(_modal_row("Current Temperature", str(round(block_summary["current_temp"], 1)) + "°C"))
     content.append(_modal_row("Baseline Temperature", str(round(block_summary["base_temp"], 1)) + "°C"))
@@ -71,6 +84,7 @@ def build_modal(block_summary):
     if block_summary.get("area_m2"):
         content.append(_modal_row("Footprint Area", str(round(block_summary["area_m2"])) + " m²"))
 
+    # BUILD INTERVENTION INFORMATION
     content.append(html.Div("Interventions", className="fw-bold text-uppercase small mt-3 mb-2 text-white", style={"letterSpacing": "2px"}))
 
     if block_summary["interventions"]:
@@ -93,6 +107,9 @@ def build_modal(block_summary):
     return content
 
 
+#-------------------
+# BUILD MODAL ROW
+#-------------------
 def _modal_row(label, value):
     return html.Div(
         className="d-flex justify-content-between align-items-center py-2 border-bottom border-secondary",
@@ -103,8 +120,12 @@ def _modal_row(label, value):
     )
 
 
+#--------------------------
+# BUILD VALIDATION RESULTS
+#-------------------------
 def build_validation_results(validation_output):
 
+    # GET VALIDATION DATA
     results = validation_output["results"]
     total_cases = validation_output["total_cases"]
     coefficient_results = validation_output["coefficient_results"]
@@ -143,6 +164,7 @@ def build_validation_results(validation_output):
          ),
     ]
 
+    # BUILD CURRENT SIMULATION RESULTS
     if total_cases == 0:
         msg = validation_output.get("status", "No cases to validate")
         content.append(html.Div(msg, className="text-white"))
@@ -158,6 +180,7 @@ def build_validation_results(validation_output):
             _build_rmse_conclusion(rmse),
         ]
 
+    # BUILD REFERENCE TABLES
     content += [
         html.Div(
             [
@@ -201,6 +224,9 @@ def build_validation_results(validation_output):
     return content
 
 
+#-------------------
+# BUILD CURRENT SIMULATION TABLE
+#-------------------
 def _build_current_simulation_table(results):
     """Render values from the interventions currently in the simulation."""
     rows = []
@@ -250,6 +276,9 @@ def _build_current_simulation_table(results):
 #---------------------------------------
 # BUILD COEFFICIENT TABLE
 #---------------------------------------
+#-------------------
+# BUILD COEFFICIENT TABLE
+#-------------------
 def _build_coefficient_table(coefficient_results):
 
     header = html.Thead(html.Tr([
@@ -281,6 +310,9 @@ def _build_coefficient_table(coefficient_results):
 #---------------------------------------
 # BUILD QUANTITY VALIDATION TABLE
 #---------------------------------------
+#-------------------
+# BUILD QUANTITY TABLE
+#-------------------
 def _build_quantity_table(quantity_results):
 
     first_header = [html.Th("Quantity", rowSpan=2)]
@@ -325,6 +357,9 @@ def _build_quantity_table(quantity_results):
 #---------------------------------------
 # BUILD RMSE CONCLUSION
 #---------------------------------------
+#-------------------
+# BUILD RMSE CONCLUSION
+#-------------------
 def _build_rmse_conclusion(rmse):
 
     if rmse <= 0.50:
@@ -351,6 +386,9 @@ def _build_rmse_conclusion(rmse):
 #---------------------------------------
 # BUILD RMSE KEY
 #---------------------------------------
+#-------------------
+# BUILD RMSE KEY
+#-------------------
 def _build_rmse_key():
 
     return html.Div(
